@@ -1,0 +1,16 @@
+{
+  "name": "3d-force-graph-template",
+  "version": "1.0.0",
+  "description": "3D force-directed graph with Three.js — nodes support text, images, and labels",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0"
+  }
+}

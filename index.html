@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Force Graph</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a1a; font-family: system-ui, -apple-system, sans-serif; }
+    #app { width: 100%; height: 100%; }
+
+    #tooltip {
+      position: fixed;
+      pointer-events: none;
+      background: rgba(15, 15, 35, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 16px;
+      max-width: 280px;
+      color: #e0e0e0;
+      font-size: 13px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 100;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+    #tooltip.visible { opacity: 1; }
+    #tooltip img {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: block;
+    }
+    #tooltip .tt-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    #tooltip .tt-text {
+      line-height: 1.5;
+      color: #b0b0c8;
+    }
+
+    #sidebar {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      width: 260px;
+      background: rgba(15, 15, 35, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 20px;
+      color: #e0e0e0;
+      font-size: 13px;
+      z-index: 50;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    }
+    #sidebar h2 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+    #sidebar p {
+      line-height: 1.6;
+      color: #8888aa;
+      margin-bottom: 8px;
+    }
+    #sidebar kbd {
+      display: inline-block;
+      padding: 2px 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="tooltip"></div>
+  <div id="sidebar">
+    <h2>3D Force Graph</h2>
+    <p><kbd>Drag</kbd> Rotate the scene</p>
+    <p><kbd>Scroll</kbd> Zoom in/out</p>
+    <p><kbd>Hover</kbd> node for details</p>
+    <p><kbd>Click</kbd> node to focus</p>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
