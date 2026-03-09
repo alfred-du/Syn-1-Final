@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Course Readings — Connection Explorer</title>
+    <title>Syn 1 Text Explorer</title>
     <meta
       name="description"
-      content="Interactive 3D force-directed graph exploring connections between course readings across audience, topic, focus, and communication style."
+      content="Interactive 3D force-directed graph mapping between Syn 1 readings across audience, topic, focus, and communicatication style."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -140,15 +140,16 @@
         margin-bottom: 6px;
       }
       #sidebar .sidebar-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 10px;
-        background: linear-gradient(135deg, #6366f1, #a855f7);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
         flex-shrink: 0;
+        overflow: hidden;
+      }
+      #sidebar .sidebar-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
       }
       #sidebar h2 {
         font-size: 17px;
@@ -345,11 +346,11 @@
 
     <div id="sidebar">
       <div class="sidebar-header">
-        <div class="sidebar-icon">🔗</div>
-        <h2>Connection Explorer</h2>
+        <div class="sidebar-icon"><img src="/Seventh College Logo.png" alt="Seventh College" /></div>
+        <h2>Syn 1 Text Explorer</h2>
       </div>
       <p class="sidebar-subtitle">
-        Explore how course readings relate across different dimensions.
+        Map the connections between Synthesis readings across audience, topic, focus, and communication style.
       </p>
 
       <div class="select-wrapper">
