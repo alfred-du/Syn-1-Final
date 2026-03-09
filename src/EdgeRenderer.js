@@ -1,8 +1,8 @@
 import * as THREE from "three";
 
 /**
- * Renders edges as semi-transparent curved lines between node pairs.
- * Uses THREE.Line with BufferGeometry — positions update each frame.
+ * Renders edges as semi-transparent lines between reading pairs.
+ * Edges are color-coded by the shared connector category.
  */
 
 export class EdgeRenderer {
@@ -18,15 +18,22 @@ export class EdgeRenderer {
     const geo = new THREE.BufferGeometry();
     geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
 
+    const edgeColor = edge.connectorColor
+      ? new THREE.Color(edge.connectorColor)
+      : new THREE.Color(0x4455aa);
+
     const mat = new THREE.LineBasicMaterial({
-      color: 0x4455aa,
+      color: edgeColor,
       transparent: true,
-      opacity: 0.3,
+      opacity: 0.5,
       linewidth: 1,
     });
 
     const line = new THREE.Line(geo, mat);
-    line.userData = { edge };
+    line.userData = {
+      edge,
+      baseColor: edgeColor.clone(),
+    };
     this.group.add(line);
     this.lines.push(line);
   }
@@ -55,16 +62,28 @@ export class EdgeRenderer {
     for (const line of this.lines) {
       const e = line.userData.edge;
       if (e.source === nodeId || e.target === nodeId) {
-        line.material.opacity = 0.8;
-        line.material.color.set(0x8899ff);
+        line.material.opacity = 0.7;
+        // Brighten the color
+        const bright = line.userData.baseColor.clone();
+        bright.offsetHSL(0, 0.1, 0.2);
+        line.material.color.copy(bright);
       }
     }
   }
 
   resetHighlight() {
     for (const line of this.lines) {
-      line.material.opacity = 0.3;
-      line.material.color.set(0x4455aa);
+      line.material.opacity = 0.5;
+      line.material.color.copy(line.userData.baseColor);
     }
+  }
+
+  dispose() {
+    this.scene.remove(this.group);
+    for (const line of this.lines) {
+      line.geometry.dispose();
+      line.material.dispose();
+    }
+    this.lines = [];
   }
 }

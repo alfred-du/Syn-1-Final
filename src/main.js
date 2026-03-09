@@ -1,10 +1,11 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-import { graphData } from "./data.js";
+import { categories, buildGraph } from "./data.js";
 import { ForceSimulation } from "./ForceSimulation.js";
 import { NodeRenderer } from "./NodeRenderer.js";
 import { EdgeRenderer } from "./EdgeRenderer.js";
+import { FieldRenderer } from "./FieldRenderer.js";
 import { Tooltip } from "./Tooltip.js";
 
 // ─── Scene Setup ────────────────────────────────────────────────────
@@ -18,7 +19,7 @@ renderer.toneMappingExposure = 1.2;
 container.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x0a0a1a, 0.0012);
+scene.fog = new THREE.FogExp2(0x0a0a1a, 0.0008);
 
 const camera = new THREE.PerspectiveCamera(
   60,
@@ -26,7 +27,7 @@ const camera = new THREE.PerspectiveCamera(
   0.5,
   2000,
 );
-camera.position.set(0, 60, 300);
+camera.position.set(0, 60, 350);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
@@ -48,37 +49,161 @@ const fillLight = new THREE.DirectionalLight(0x6688cc, 0.6);
 fillLight.position.set(-50, -20, -60);
 scene.add(fillLight);
 
-// Subtle starfield background
+// Starfield
 createStarfield(scene);
 
-// ─── Graph Data ─────────────────────────────────────────────────────
+// ─── State ──────────────────────────────────────────────────────────
 
-const nodes = graphData.nodes.map((n) => ({ ...n }));
-const nodeById = new Map(nodes.map((n) => [n.id, n]));
-
-const edges = graphData.edges.map((e) => ({
-  ...e,
-  sourceNode: nodeById.get(e.source),
-  targetNode: nodeById.get(e.target),
-}));
-
-// ─── Simulation ─────────────────────────────────────────────────────
-
-const sim = new ForceSimulation(nodes, edges, {
-  repulsion: -400,
-  linkDistance: 100,
-  linkStrength: 0.03,
-  centerStrength: 0.005,
-});
-
-// ─── Renderers ──────────────────────────────────────────────────────
-
-const nodeRenderer = new NodeRenderer(scene);
-const edgeRenderer = new EdgeRenderer(scene);
+let currentCategory = "audience";
+let nodes = [];
+let edges = [];
+let nodeById = new Map();
+let sim = null;
+let nodeRenderer = new NodeRenderer(scene);
+let edgeRenderer = new EdgeRenderer(scene);
+let fieldRenderer = new FieldRenderer(scene);
 const tooltip = new Tooltip();
 
-for (const n of nodes) nodeRenderer.createNode(n);
-for (const e of edges) edgeRenderer.createEdge(e);
+// ─── Build / Rebuild Graph ──────────────────────────────────────────
+
+function loadCategory(catKey) {
+  currentCategory = catKey;
+
+  // Clear old renderers
+  nodeRenderer.dispose();
+  edgeRenderer.dispose();
+  fieldRenderer.dispose();
+
+  nodeRenderer = new NodeRenderer(scene);
+  edgeRenderer = new EdgeRenderer(scene);
+  fieldRenderer = new FieldRenderer(scene);
+
+  // Build new data
+  const graphData = buildGraph(catKey);
+  nodes = graphData.nodes.map((n) => ({ ...n }));
+  nodeById = new Map(nodes.map((n) => [n.id, n]));
+
+  edges = graphData.edges.map((e) => ({
+    ...e,
+    sourceNode: nodeById.get(e.source),
+    targetNode: nodeById.get(e.target),
+  }));
+
+  // Build connector groups for clustering
+  const cat = categories[catKey];
+  const connectorGroups = cat.connectors.map((connector) => ({
+    connectorId: connector.id,
+    memberIds: cat.connections
+      .filter((c) => c.connectors.includes(connector.id))
+      .map((c) => c.reading),
+  }));
+
+  // Simulation — only reading nodes now, no hubs
+  sim = new ForceSimulation(nodes, edges, {
+    repulsion: -500,
+    linkDistance: 110,
+    linkStrength: 0.04,
+    centerStrength: 0.006,
+    clusterStrength: 0.02,
+    connectorGroups,
+  });
+
+  // Render nodes and edges
+  for (const n of nodes) nodeRenderer.createNode(n);
+  for (const e of edges) edgeRenderer.createEdge(e);
+
+  // Create influence fields for each connector
+  for (const connector of cat.connectors) {
+    const memberIds = cat.connections
+      .filter((c) => c.connectors.includes(connector.id))
+      .map((c) => c.reading);
+    fieldRenderer.createField(connector, memberIds);
+  }
+
+  // Update sidebar description
+  const descEl = document.getElementById("category-desc");
+  if (descEl) descEl.textContent = cat.description;
+
+  // Update selector
+  const select = document.getElementById("category-select");
+  if (select) select.value = catKey;
+
+  // Update legend/key
+  updateLegend(graphData.connectors);
+}
+
+// ─── Dynamic Legend ─────────────────────────────────────────────────
+
+function updateLegend(connectors) {
+  const legendItems = document.getElementById("legend-items");
+  if (!legendItems) return;
+
+  legendItems.innerHTML = "";
+
+  for (const c of connectors) {
+    const item = document.createElement("div");
+    item.className = "legend-item";
+    item.dataset.connectorId = c.id;
+    item.style.cursor = "pointer";
+    item.innerHTML = `
+      <div class="legend-dot field-dot" style="background: ${c.color}; box-shadow: 0 0 8px ${c.color}60;"></div>
+      ${c.label}
+    `;
+
+    // Hover legend item → highlight corresponding field
+    item.addEventListener("mouseenter", () => {
+      fieldRenderer.highlightFields([c.id]);
+    });
+    item.addEventListener("mouseleave", () => {
+      fieldRenderer.resetHighlight();
+    });
+
+    legendItems.appendChild(item);
+  }
+
+  // Add a separator and node type
+  const sep = document.createElement("div");
+  sep.className = "legend-separator";
+  legendItems.appendChild(sep);
+
+  const readingItem = document.createElement("div");
+  readingItem.className = "legend-item";
+  readingItem.innerHTML = `
+    <div class="legend-dot" style="background: #4ade80;"></div>
+    Reading Node
+  `;
+  legendItems.appendChild(readingItem);
+
+  const edgeItem = document.createElement("div");
+  edgeItem.className = "legend-item";
+  edgeItem.innerHTML = `
+    <div class="legend-dot" style="background: rgba(120,130,200,0.7); width: 20px; height: 2px; border-radius: 1px;"></div>
+    Shared Connection
+  `;
+  legendItems.appendChild(edgeItem);
+}
+
+// ─── UI Setup ───────────────────────────────────────────────────────
+
+function setupUI() {
+  const select = document.getElementById("category-select");
+  if (!select) return;
+
+  // Populate options
+  for (const [key, cat] of Object.entries(categories)) {
+    const opt = document.createElement("option");
+    opt.value = key;
+    opt.textContent = cat.label;
+    select.appendChild(opt);
+  }
+
+  select.addEventListener("change", (e) => {
+    loadCategory(e.target.value);
+  });
+}
+
+setupUI();
+loadCategory("audience");
 
 // ─── Interaction ────────────────────────────────────────────────────
 
@@ -91,7 +216,8 @@ function onPointerMove(event) {
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
   raycaster.setFromCamera(mouse, camera);
-  const hits = raycaster.intersectObjects(nodeRenderer.getMeshes(), false);
+  const meshes = nodeRenderer.getMeshes();
+  const hits = raycaster.intersectObjects(meshes, false);
 
   const hitNode = hits.length > 0 ? hits[0].object.userData.nodeId : null;
 
@@ -99,6 +225,7 @@ function onPointerMove(event) {
     if (hoveredNode) {
       nodeRenderer.unhighlight(hoveredNode);
       edgeRenderer.resetHighlight();
+      fieldRenderer.resetHighlight();
       tooltip.hide();
     }
 
@@ -107,7 +234,14 @@ function onPointerMove(event) {
     if (hoveredNode) {
       nodeRenderer.highlight(hoveredNode);
       edgeRenderer.highlightEdgesOf(hoveredNode);
+
+      // Highlight the fields this reading belongs to
       const node = nodeById.get(hoveredNode);
+      if (node && node.connectorFields) {
+        const connIds = node.connectorFields.map((c) => c.id);
+        fieldRenderer.highlightFields(connIds);
+      }
+
       tooltip.show(node, event.clientX, event.clientY);
     }
   } else if (hoveredNode) {
@@ -146,9 +280,12 @@ window.addEventListener("resize", () => {
 function animate() {
   requestAnimationFrame(animate);
 
-  sim.tick();
-  nodeRenderer.updatePositions(nodes);
-  edgeRenderer.updatePositions(edges);
+  if (sim) {
+    sim.tick();
+    nodeRenderer.updatePositions(nodes);
+    edgeRenderer.updatePositions(edges);
+    fieldRenderer.updatePositions(nodeById);
+  }
 
   controls.update();
   renderer.render(scene, camera);
@@ -178,12 +315,12 @@ function animateCamera(destPos, destTarget, duration) {
 }
 
 function createStarfield(scene) {
-  const count = 1500;
+  const count = 2000;
   const positions = new Float32Array(count * 3);
   for (let i = 0; i < count; i++) {
-    positions[i * 3] = (Math.random() - 0.5) * 1200;
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 1200;
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 1200;
+    positions[i * 3] = (Math.random() - 0.5) * 1500;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 1500;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 1500;
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));

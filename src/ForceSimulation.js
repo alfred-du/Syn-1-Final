@@ -11,11 +11,13 @@ export class ForceSimulation {
   constructor(nodes, edges, opts = {}) {
     this.nodes = nodes;
     this.edges = edges;
+    this.connectorGroups = opts.connectorGroups ?? []; // [{ connectorId, memberIds: [] }]
 
     this.repulsion = opts.repulsion ?? -120;
     this.linkDistance = opts.linkDistance ?? 50;
     this.linkStrength = opts.linkStrength ?? 0.06;
     this.centerStrength = opts.centerStrength ?? 0.01;
+    this.clusterStrength = opts.clusterStrength ?? 0.015;
     this.decay = opts.decay ?? 0.92;
     this.alphaMin = opts.alphaMin ?? 0.001;
 
@@ -41,6 +43,7 @@ export class ForceSimulation {
 
     this._applyManyBody();
     this._applyLinks();
+    this._applyClustering();
     this._applyCenter();
     this._integrate();
 
@@ -110,6 +113,34 @@ export class ForceSimulation {
       n.vx -= n.x * centerStrength * alpha;
       n.vy -= n.y * centerStrength * alpha;
       n.vz -= n.z * centerStrength * alpha;
+    }
+  }
+
+  _applyClustering() {
+    const { nodes, connectorGroups, clusterStrength, alpha } = this;
+    if (!connectorGroups.length) return;
+
+    const nodeMap = new Map(nodes.map((n) => [n.id, n]));
+
+    for (const group of connectorGroups) {
+      const members = group.memberIds
+        .map((id) => nodeMap.get(id))
+        .filter(Boolean);
+      if (members.length < 2) continue;
+
+      // Compute centroid of this connector group
+      let cx = 0, cy = 0, cz = 0;
+      for (const m of members) { cx += m.x; cy += m.y; cz += m.z; }
+      cx /= members.length;
+      cy /= members.length;
+      cz /= members.length;
+
+      // Pull each member toward centroid
+      for (const m of members) {
+        m.vx += (cx - m.x) * clusterStrength * alpha;
+        m.vy += (cy - m.y) * clusterStrength * alpha;
+        m.vz += (cz - m.z) * clusterStrength * alpha;
+      }
     }
   }
 

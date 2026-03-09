@@ -1,10 +1,11 @@
 import * as THREE from "three";
 
 /**
- * Creates and manages 3D meshes for graph nodes.
+ * Creates and manages 3D meshes for reading nodes.
  * Each node gets:
  *   1. A glowing sphere (with emissive colour)
  *   2. A floating multi-line label sprite above the sphere
+ *   3. Small color-coded connector dots below the sphere
  */
 
 const LABEL_SCALE = 14;
@@ -17,6 +18,7 @@ export class NodeRenderer {
 
     this.meshMap = new Map();
     this.labelMap = new Map();
+    this.dotMap = new Map(); // nodeId → array of dot meshes
   }
 
   createNode(node) {
@@ -36,6 +38,7 @@ export class NodeRenderer {
     this.group.add(mesh);
     this.meshMap.set(node.id, mesh);
 
+    // Glow shell
     const glowGeo = new THREE.SphereGeometry(baseRadius * 1.35, 32, 32);
     const glowMat = new THREE.MeshBasicMaterial({
       color,
@@ -47,17 +50,19 @@ export class NodeRenderer {
     mesh.add(glow);
 
     this._createLabel(node, baseRadius);
+    this._createConnectorDots(node, baseRadius);
   }
 
   _createLabel(node, radius) {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
-    const text = node.label || node.id;
+    const text = node.shortLabel || node.id;
     const lines = text.split("\n");
-    const fontSize = 36;
+    const fontSize = 32;
     const lineHeight = fontSize * 1.3;
-    const font = `600 ${fontSize}px system-ui, -apple-system, sans-serif`;
+    const fontWeight = "600";
+    const font = `${fontWeight} ${fontSize}px system-ui, -apple-system, sans-serif`;
 
     ctx.font = font;
     const maxWidth = Math.max(...lines.map((l) => ctx.measureText(l).width));
@@ -77,10 +82,12 @@ export class NodeRenderer {
     for (let i = 0; i < lines.length; i++) {
       const y = startY + i * lineHeight;
 
+      // Shadow
       ctx.fillStyle = "rgba(0,0,0,0.5)";
       ctx.fillText(lines[i], canvas.width / 2 + 1, y + 1);
 
-      ctx.fillStyle = "#ffffff";
+      // Text
+      ctx.fillStyle = "#e0e0f0";
       ctx.fillText(lines[i], canvas.width / 2, y);
     }
 
@@ -100,6 +107,51 @@ export class NodeRenderer {
     const mesh = this.meshMap.get(node.id);
     mesh.add(sprite);
     this.labelMap.set(node.id, sprite);
+  }
+
+  /**
+   * Render small colored dots beneath the reading node to indicate
+   * which connector categories the reading belongs to.
+   */
+  _createConnectorDots(node, radius) {
+    const connectors = node.connectorFields || [];
+    if (connectors.length === 0) return;
+
+    const dotRadius = 0.9;
+    const spacing = 2.8;
+    const totalWidth = (connectors.length - 1) * spacing;
+    const startX = -totalWidth / 2;
+    const dots = [];
+
+    for (let i = 0; i < connectors.length; i++) {
+      const c = connectors[i];
+      const dotColor = new THREE.Color(c.color);
+
+      const dotGeo = new THREE.SphereGeometry(dotRadius, 16, 16);
+      const dotMat = new THREE.MeshBasicMaterial({
+        color: dotColor,
+        transparent: true,
+        opacity: 0.9,
+      });
+      const dot = new THREE.Mesh(dotGeo, dotMat);
+      dot.position.set(startX + i * spacing, -(radius + 3.5), 0);
+
+      // Glow around dot
+      const glowGeo = new THREE.SphereGeometry(dotRadius * 2.2, 16, 16);
+      const glowMat = new THREE.MeshBasicMaterial({
+        color: dotColor,
+        transparent: true,
+        opacity: 0.15,
+        side: THREE.BackSide,
+      });
+      dot.add(new THREE.Mesh(glowGeo, glowMat));
+
+      const mesh = this.meshMap.get(node.id);
+      mesh.add(dot);
+      dots.push(dot);
+    }
+
+    this.dotMap.set(node.id, dots);
   }
 
   updatePositions(nodes) {
@@ -129,6 +181,24 @@ export class NodeRenderer {
 
   getMeshes() {
     return [...this.meshMap.values()];
+  }
+
+  dispose() {
+    this.scene.remove(this.group);
+    for (const mesh of this.meshMap.values()) {
+      mesh.geometry.dispose();
+      mesh.material.dispose();
+      mesh.traverse((child) => {
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) {
+          if (child.material.map) child.material.map.dispose();
+          child.material.dispose();
+        }
+      });
+    }
+    this.meshMap.clear();
+    this.labelMap.clear();
+    this.dotMap.clear();
   }
 }
 
