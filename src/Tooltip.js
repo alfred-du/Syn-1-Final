@@ -1,6 +1,6 @@
 /**
  * Manages the HTML tooltip that appears on node hover,
- * displaying the node's image, label, and text.
+ * displaying the node's label and text.
  */
 
 export class Tooltip {
@@ -11,12 +11,9 @@ export class Tooltip {
   show(node, screenX, screenY) {
     let html = "";
 
-    if (node.image) {
-      html += `<img src="${node.image}" alt="${node.label ?? ""}" />`;
-    }
-
     if (node.label) {
-      html += `<div class="tt-label">${node.label}</div>`;
+      const displayLabel = node.label.replace(/\n/g, " ");
+      html += `<div class="tt-label">${displayLabel}</div>`;
     }
 
     if (node.text) {

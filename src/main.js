@@ -18,7 +18,7 @@ renderer.toneMappingExposure = 1.2;
 container.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x0a0a1a, 0.0025);
+scene.fog = new THREE.FogExp2(0x0a0a1a, 0.0012);
 
 const camera = new THREE.PerspectiveCamera(
   60,
@@ -26,7 +26,7 @@ const camera = new THREE.PerspectiveCamera(
   0.5,
   2000,
 );
-camera.position.set(0, 40, 160);
+camera.position.set(0, 60, 300);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
@@ -34,7 +34,7 @@ controls.dampingFactor = 0.08;
 controls.rotateSpeed = 0.6;
 controls.zoomSpeed = 1.0;
 controls.minDistance = 30;
-controls.maxDistance = 500;
+controls.maxDistance = 800;
 
 // ─── Lighting ───────────────────────────────────────────────────────
 
@@ -65,16 +65,15 @@ const edges = graphData.edges.map((e) => ({
 // ─── Simulation ─────────────────────────────────────────────────────
 
 const sim = new ForceSimulation(nodes, edges, {
-  repulsion: -160,
-  linkDistance: 55,
-  linkStrength: 0.05,
-  centerStrength: 0.008,
+  repulsion: -400,
+  linkDistance: 100,
+  linkStrength: 0.03,
+  centerStrength: 0.005,
 });
 
 // ─── Renderers ──────────────────────────────────────────────────────
 
-const textureLoader = new THREE.TextureLoader();
-const nodeRenderer = new NodeRenderer(scene, textureLoader);
+const nodeRenderer = new NodeRenderer(scene);
 const edgeRenderer = new EdgeRenderer(scene);
 const tooltip = new Tooltip();
 

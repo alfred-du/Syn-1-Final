@@ -4,23 +4,19 @@ import * as THREE from "three";
  * Creates and manages 3D meshes for graph nodes.
  * Each node gets:
  *   1. A glowing sphere (with emissive colour)
- *   2. A floating label sprite above the sphere
- *   3. An optional image sprite mapped as a texture
+ *   2. A floating multi-line label sprite above the sphere
  */
 
-const LABEL_SCALE = 12;
-const IMAGE_SPRITE_SIZE = 6;
+const LABEL_SCALE = 14;
 
 export class NodeRenderer {
-  constructor(scene, textureLoader) {
+  constructor(scene) {
     this.scene = scene;
-    this.loader = textureLoader;
     this.group = new THREE.Group();
     this.scene.add(this.group);
 
     this.meshMap = new Map();
     this.labelMap = new Map();
-    this.imageMap = new Map();
   }
 
   createNode(node) {
@@ -51,10 +47,6 @@ export class NodeRenderer {
     mesh.add(glow);
 
     this._createLabel(node, baseRadius);
-
-    if (node.image) {
-      this._createImageSprite(node, baseRadius);
-    }
   }
 
   _createLabel(node, radius) {
@@ -62,25 +54,35 @@ export class NodeRenderer {
     const ctx = canvas.getContext("2d");
 
     const text = node.label || node.id;
-    const fontSize = 42;
-    ctx.font = `600 ${fontSize}px system-ui, -apple-system, sans-serif`;
-    const metrics = ctx.measureText(text);
-    const textWidth = metrics.width;
+    const lines = text.split("\n");
+    const fontSize = 36;
+    const lineHeight = fontSize * 1.3;
+    const font = `600 ${fontSize}px system-ui, -apple-system, sans-serif`;
 
-    const padding = 24;
-    canvas.width = nextPow2(textWidth + padding * 2);
-    canvas.height = nextPow2(fontSize + padding * 2);
+    ctx.font = font;
+    const maxWidth = Math.max(...lines.map((l) => ctx.measureText(l).width));
+
+    const padding = 28;
+    canvas.width = nextPow2(maxWidth + padding * 2);
+    canvas.height = nextPow2(lines.length * lineHeight + padding * 2);
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.font = `600 ${fontSize}px system-ui, -apple-system, sans-serif`;
+    ctx.font = font;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    ctx.fillStyle = "rgba(0,0,0,0.5)";
-    ctx.fillText(text, canvas.width / 2 + 1, canvas.height / 2 + 1);
+    const startY =
+      canvas.height / 2 - ((lines.length - 1) * lineHeight) / 2;
 
-    ctx.fillStyle = "#ffffff";
-    ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+    for (let i = 0; i < lines.length; i++) {
+      const y = startY + i * lineHeight;
+
+      ctx.fillStyle = "rgba(0,0,0,0.5)";
+      ctx.fillText(lines[i], canvas.width / 2 + 1, y + 1);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(lines[i], canvas.width / 2, y);
+    }
 
     const texture = new THREE.CanvasTexture(canvas);
     texture.minFilter = THREE.LinearFilter;
@@ -92,38 +94,12 @@ export class NodeRenderer {
     const sprite = new THREE.Sprite(spriteMat);
     const aspect = canvas.width / canvas.height;
     sprite.scale.set(LABEL_SCALE * aspect, LABEL_SCALE, 1);
-    sprite.position.y = radius + 5;
+    sprite.position.y = radius + 6 + lines.length * 2;
     sprite.renderOrder = 1;
 
     const mesh = this.meshMap.get(node.id);
     mesh.add(sprite);
     this.labelMap.set(node.id, sprite);
-  }
-
-  _createImageSprite(node, radius) {
-    this.loader.load(node.image, (texture) => {
-      texture.minFilter = THREE.LinearFilter;
-      texture.colorSpace = THREE.SRGBColorSpace;
-
-      const spriteMat = new THREE.SpriteMaterial({
-        map: texture,
-        transparent: true,
-        depthWrite: false,
-      });
-      const sprite = new THREE.Sprite(spriteMat);
-
-      const aspect = texture.image.width / texture.image.height;
-      const size = IMAGE_SPRITE_SIZE * (node.size ?? 1);
-      sprite.scale.set(size * aspect, size, 1);
-      sprite.position.y = -(radius + 4);
-      sprite.renderOrder = 1;
-
-      const mesh = this.meshMap.get(node.id);
-      if (mesh) {
-        mesh.add(sprite);
-        this.imageMap.set(node.id, sprite);
-      }
-    });
   }
 
   updatePositions(nodes) {

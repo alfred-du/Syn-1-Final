@@ -25,7 +25,7 @@ export class ForceSimulation {
   }
 
   _init() {
-    const spread = 150;
+    const spread = 300;
     for (const n of this.nodes) {
       n.x = n.x ?? (Math.random() - 0.5) * spread;
       n.y = n.y ?? (Math.random() - 0.5) * spread;
