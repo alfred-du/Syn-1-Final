@@ -23,7 +23,7 @@ export class NodeRenderer {
 
   createNode(node) {
     const baseRadius = (node.size ?? 1) * 3;
-    const color = new THREE.Color(node.color ?? "#6366f1");
+    const color = new THREE.Color(node.color ?? "#588157");
 
     const geo = new THREE.SphereGeometry(baseRadius, 32, 32);
     const mat = new THREE.MeshStandardMaterial({
@@ -87,7 +87,7 @@ export class NodeRenderer {
       ctx.fillText(lines[i], canvas.width / 2 + 1, y + 1);
 
       // Text
-      ctx.fillStyle = "#e0e0f0";
+      ctx.fillStyle = "#d4d4c8";
       ctx.fillText(lines[i], canvas.width / 2, y);
     }
 

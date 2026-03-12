@@ -23,7 +23,7 @@ export const readings = [
       "Global capitalism is fundamentally incompatible with a safe climate. Critiques the 'treadmill of production' and the myth of 'green capitalism,' advocating for an ecosocialist revolution.",
     communicationStyle:
       "Structural and systemic critique — uses academic, macro-level framing to shift blame from individual consumers onto global economic frameworks, dismantling the illusion that society can buy or invent its way out of crisis.",
-    color: "#6366f1",
+    color: "#5B7553",
     size: 1.15,
   },
   {
@@ -37,7 +37,7 @@ export const readings = [
       "How conventional clock time disconnects humans from ecological realities. Treating nature as a stable background is a 'fatal confusion' preventing urgent action.",
     communicationStyle:
       "Deconstructive analysis via speech-act theory — analyzes standard time-telling as a 'non-performative' act (borrowing from Sara Ahmed) that gives the illusion of coordination while enabling the destructive status quo.",
-    color: "#8b5cf6",
+    color: "#8B6F47",
     size: 1.15,
   },
   {
@@ -51,7 +51,7 @@ export const readings = [
       "'De-pristining' nature writing by integrating Black history, racial injustice, and built environments. The erasure of marginalized human experiences mirrors environmental destruction.",
     communicationStyle:
       "Blended genre (memoir, poetry, literary criticism) — uses personal anecdotes and vivid imagery to fuzz the lines between human and non-human worlds, demonstrating the argument through narrative.",
-    color: "#10b981",
+    color: "#2D6A4F",
     size: 1.15,
   },
   {
@@ -65,7 +65,7 @@ export const readings = [
       "Framing the climate crisis as a once-in-a-century opportunity to simultaneously fix failing economic and social models (wage stagnation, crumbling healthcare, racial inequality).",
     communicationStyle:
       "Intersectional and motivational rhetoric — rejects doom narratives, wielding 'hope' as a strategic survival tool. Links environmentalism to everyday struggles to widen the audience for collective political action.",
-    color: "#ef4444",
+    color: "#BC6C25",
     size: 1.15,
   },
   {
@@ -79,7 +79,7 @@ export const readings = [
       "A new generative AI model (Spherical DYffusion) projects 100 years of climate patterns 25× faster using less computing power.",
     communicationStyle:
       "Institutional science journalism — straightforward, objective reporting utilizing statistics and expert quotes to highlight technological advancement without political or economic critique.",
-    color: "#f59e0b",
+    color: "#A68A64",
     size: 1.15,
   },
   {
@@ -93,7 +93,7 @@ export const readings = [
       "Explaining GHG mechanics, identifying primary sources (fossil fuels, agriculture), and outlining solutions across systemic, collective, and household levels (referencing Project Drawdown).",
     communicationStyle:
       "Accessible educational primer — breaks complex science into digestible Q&A formats, balances systemic facts with empowering individual action items, avoids the paralysis that often accompanies climate education.",
-    color: "#22c55e",
+    color: "#40916C",
     size: 1.15,
   },
   {
@@ -107,7 +107,7 @@ export const readings = [
       "The necessity of 'hopepunk' and 'solarpunk' narratives imagining decolonized, intersectional, and equitable futures — pushing back against dystopian addiction.",
     communicationStyle:
       "Reflective manifesto — appeals to emotion and imagination, arguing that art and storytelling shape values. Focuses on 'nurturing' positive depictions to create imaginative conditions for real-world solutions.",
-    color: "#ec4899",
+    color: "#9B6B4A",
     size: 1.15,
   },
   {
@@ -122,7 +122,7 @@ export const readings = [
       "Rebutting tech-utopian claims (e.g. Sam Altman's). Climate change is an infrastructure, regulatory, and economic problem — not just a technological one.",
     communicationStyle:
       "Pragmatic countering — uses economic reasoning and practical realities to dismantle tech hype. Without aggressive policy and government regulation, technological breakthroughs alone are insufficient.",
-    color: "#f97316",
+    color: "#CC8B3C",
     size: 1.15,
   },
   {
@@ -137,7 +137,7 @@ export const readings = [
       "Challenging the policing of 'Standard English' and advocating for 'code-meshing' — blending dialects, languages, and cultural rhetorical styles in formal writing.",
     communicationStyle:
       "Performative academic argument — deliberately writes using code-meshing (AAVE + academic discourse), embodying his argument to prove linguistic diversity enhances rhetorical effectiveness.",
-    color: "#a855f7",
+    color: "#6B705C",
     size: 1.15,
   },
   {
@@ -151,7 +151,7 @@ export const readings = [
       "Conservative politicians support massive wind farm projects for economic survival and tax revenue, despite disbelieving in climate change — demonstrating economic pragmatism over ideology.",
     communicationStyle:
       "Audio narrative via 'rhetorical listening' — approaches climate skeptics without judgment, demonstrating how shared goals (economic stability) can drive climate action across ideological divides.",
-    color: "#14b8a6",
+    color: "#588157",
     size: 1.15,
   },
   {
@@ -164,7 +164,7 @@ export const readings = [
       "Traditional grading is inaccurate and inequitable. Assessing 'labor' focuses students on learning experiences rather than the distracting power of hierarchical rankings.",
     communicationStyle:
       "Pedagogical interview — straightforward educational philosophy critiquing systemic norms, advocating a shift from instructor evaluation to student engagement and agency.",
-    color: "#06b6d4",
+    color: "#3A7D6E",
     size: 1.15,
   },
   {
@@ -179,7 +179,7 @@ export const readings = [
       "Disproportionate climate impacts on marginalized communities and women. Highlights community-led solutions (microgrids) and political organizing through the NAACP.",
     communicationStyle:
       "Conversational, grounded intersectional analysis — translates academic concepts (patriarchy, monopoly capitalism) into real-world examples (asthma deaths, energy shutoffs) as a practical roadmap for local activism.",
-    color: "#0ea5e9",
+    color: "#4A7C59",
     size: 1.15,
   },
   {
@@ -194,7 +194,7 @@ export const readings = [
       "The development of a rhetorical listening mindset through a 'concept-tactic' approach. Emphasizes moving from a 'win-lose' competitive model of communication to a 'win-win' model that fosters understanding and social justice by analyzing how language, identity (intersectionality), and 'terministic screens' shape perception of facts and truth.",
     communicationStyle:
       "Pedagogical, analytical, and inclusive — uses a structured, educational tone to bridge complex rhetorical theory (epistemology, ontology, Burkean 'terministic screens') and everyday writing tasks. Models specific 'moves' such as framing topics as rhetorical problems and assuming a 'writerly stance,' translating academic concepts into a practical toolbox for ethical engagement in a polarized society.",
-    color: "#e879f9",
+    color: "#8B7355",
     size: 1.15,
   },
 ];
@@ -211,32 +211,32 @@ export const categories = {
       {
         id: "aud-academic",
         label: "Academic Scholars",
-        color: "#4f46e5",
+        color: "#3D5A3A",
       },
       {
         id: "aud-general",
         label: "General Public",
-        color: "#16a34a",
+        color: "#588157",
       },
       {
         id: "aud-tech",
         label: "Tech & Science Readers",
-        color: "#d97706",
+        color: "#A68A64",
       },
       {
         id: "aud-creative",
         label: "Writers & Creatives",
-        color: "#db2777",
+        color: "#9B6B4A",
       },
       {
         id: "aud-activists",
         label: "Activists & Movements",
-        color: "#dc2626",
+        color: "#BC6C25",
       },
       {
         id: "aud-educators",
         label: "Educators & Students",
-        color: "#0891b2",
+        color: "#3A7D6E",
       },
     ],
     connections: [
@@ -263,32 +263,32 @@ export const categories = {
       {
         id: "top-econ-climate",
         label: "Economic Systems & Climate",
-        color: "#b91c1c",
+        color: "#8B4513",
       },
       {
         id: "top-justice",
         label: "Justice & Intersectionality",
-        color: "#7c3aed",
+        color: "#6B705C",
       },
       {
         id: "top-tech",
         label: "Technology & Solutions",
-        color: "#ca8a04",
+        color: "#CC8B3C",
       },
       {
         id: "top-narrative",
         label: "Narrative, Culture & Time",
-        color: "#be185d",
+        color: "#9B6B4A",
       },
       {
         id: "top-education",
         label: "Education & Language",
-        color: "#0e7490",
+        color: "#3A7D6E",
       },
       {
         id: "top-science",
         label: "Climate Science",
-        color: "#15803d",
+        color: "#2D6A4F",
       },
     ],
     connections: [
@@ -315,32 +315,32 @@ export const categories = {
       {
         id: "foc-systemic",
         label: "Systemic Critique",
-        color: "#1d4ed8",
+        color: "#5B4F3A",
       },
       {
         id: "foc-intersect",
         label: "Intersectional Justice",
-        color: "#9333ea",
+        color: "#6B705C",
       },
       {
         id: "foc-hope",
         label: "Hope & Solutions",
-        color: "#059669",
+        color: "#40916C",
       },
       {
         id: "foc-pragmatic",
         label: "Economic Pragmatism",
-        color: "#ea580c",
+        color: "#BC6C25",
       },
       {
         id: "foc-pedagogy",
         label: "Pedagogical Reform",
-        color: "#0284c7",
+        color: "#3A7D6E",
       },
       {
         id: "foc-tech-limit",
         label: "Limits of Technology",
-        color: "#e11d48",
+        color: "#8B5E3C",
       },
     ],
     connections: [
@@ -367,32 +367,32 @@ export const categories = {
       {
         id: "com-academic",
         label: "Academic Analysis",
-        color: "#3730a3",
+        color: "#4A5640",
       },
       {
         id: "com-journalism",
         label: "Journalistic Reporting",
-        color: "#b45309",
+        color: "#A68A64",
       },
       {
         id: "com-personal",
         label: "Personal Narrative",
-        color: "#a21caf",
+        color: "#8B6F47",
       },
       {
         id: "com-activist",
         label: "Activist & Motivational",
-        color: "#c2410c",
+        color: "#BC6C25",
       },
       {
         id: "com-educational",
         label: "Educational Primer",
-        color: "#047857",
+        color: "#40916C",
       },
       {
         id: "com-performative",
         label: "Performative & Embodied",
-        color: "#6d28d9",
+        color: "#6B705C",
       },
     ],
     connections: [

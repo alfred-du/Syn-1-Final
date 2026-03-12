@@ -20,7 +20,7 @@ export class EdgeRenderer {
 
     const edgeColor = edge.connectorColor
       ? new THREE.Color(edge.connectorColor)
-      : new THREE.Color(0x4455aa);
+      : new THREE.Color(0x5a7a52);
 
     const mat = new THREE.LineBasicMaterial({
       color: edgeColor,

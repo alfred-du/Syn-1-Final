@@ -19,7 +19,7 @@ renderer.toneMappingExposure = 1.2;
 container.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x0a0a1a, 0.0008);
+scene.fog = new THREE.FogExp2(0x0a110c, 0.0008);
 
 const camera = new THREE.PerspectiveCamera(
   60,
@@ -39,13 +39,13 @@ controls.maxDistance = 800;
 
 // ─── Lighting ───────────────────────────────────────────────────────
 
-scene.add(new THREE.AmbientLight(0x334466, 1.8));
+scene.add(new THREE.AmbientLight(0x3a4a3a, 1.8));
 
-const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
+const keyLight = new THREE.DirectionalLight(0xfff8e7, 1.2);
 keyLight.position.set(60, 100, 80);
 scene.add(keyLight);
 
-const fillLight = new THREE.DirectionalLight(0x6688cc, 0.6);
+const fillLight = new THREE.DirectionalLight(0x6b8a5e, 0.6);
 fillLight.position.set(-50, -20, -60);
 scene.add(fillLight);
 
@@ -100,11 +100,12 @@ function loadCategory(catKey) {
 
   // Simulation — only reading nodes now, no hubs
   sim = new ForceSimulation(nodes, edges, {
-    repulsion: -500,
-    linkDistance: 110,
-    linkStrength: 0.04,
-    centerStrength: 0.006,
-    clusterStrength: 0.02,
+    repulsion: -600,
+    linkDistance: 80,
+    linkStrength: 0.07,
+    centerStrength: 0.005,
+    clusterStrength: 0.08,
+    similarityStrength: 0.04,
     connectorGroups,
   });
 
@@ -169,7 +170,7 @@ function updateLegend(connectors) {
   const readingItem = document.createElement("div");
   readingItem.className = "legend-item";
   readingItem.innerHTML = `
-    <div class="legend-dot" style="background: #4ade80;"></div>
+    <div class="legend-dot" style="background: #7dab7a;"></div>
     Reading Node
   `;
   legendItems.appendChild(readingItem);
@@ -177,7 +178,7 @@ function updateLegend(connectors) {
   const edgeItem = document.createElement("div");
   edgeItem.className = "legend-item";
   edgeItem.innerHTML = `
-    <div class="legend-dot" style="background: rgba(120,130,200,0.7); width: 20px; height: 2px; border-radius: 1px;"></div>
+    <div class="legend-dot" style="background: rgba(120,145,110,0.7); width: 20px; height: 2px; border-radius: 1px;"></div>
     Shared Connection
   `;
   legendItems.appendChild(edgeItem);
@@ -325,10 +326,10 @@ function createStarfield(scene) {
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
   const mat = new THREE.PointsMaterial({
-    color: 0x555577,
+    color: 0x556b4e,
     size: 0.6,
     transparent: true,
-    opacity: 0.6,
+    opacity: 0.5,
   });
   scene.add(new THREE.Points(geo, mat));
 }
